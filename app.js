@@ -14,11 +14,53 @@ const sessionCount = document.getElementById('sessionCount');
 let timerInterval = null;
 let remainingSeconds = WORK_DURATION_SECONDS;
 let totalDuration = WORK_DURATION_SECONDS;
+let audioContext = null;
 const state = {
   phase: 'work',
   isRunning: false,
   isPaused: false,
 };
+
+function ensureAudioContext() {
+  if (audioContext && audioContext.state !== 'closed') {
+    return audioContext;
+  }
+
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  return audioContext;
+}
+
+function playTone(frequency, duration = 0.2) {
+  if (!audioContext) {
+    return;
+  }
+
+  const now = audioContext.currentTime;
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(frequency, now);
+
+  gainNode.gain.setValueAtTime(0.0001, now);
+  gainNode.gain.exponentialRampToValueAtTime(0.15, now + 0.01);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.start(now);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  oscillator.stop(now + duration + 0.02);
+}
+
+function playTransitionSound(nextPhase) {
+  if (!audioContext) {
+    return;
+  }
+
+  const frequency = nextPhase === 'break' ? 440 : 660;
+  playTone(frequency, 0.2);
+}
 
 function initApp() {
   totalDuration = WORK_DURATION_SECONDS;
@@ -33,6 +75,7 @@ function initApp() {
 
 function bindUIEvents() {
   startButton.addEventListener('click', () => {
+    ensureAudioContext();
     startTimer();
   });
 
@@ -125,9 +168,11 @@ function switchPhase() {
   if (state.phase === 'work') {
     state.phase = 'break';
     remainingSeconds = BREAK_DURATION_SECONDS;
+    playTransitionSound('break');
   } else {
     state.phase = 'work';
     remainingSeconds = WORK_DURATION_SECONDS;
+    playTransitionSound('work');
   }
 }
 
