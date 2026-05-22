@@ -1,5 +1,7 @@
 const WORK_DURATION_SECONDS = 25 * 60;
+const BREAK_DURATION_SECONDS = 5 * 60;
 const timerValue = document.getElementById('timerValue');
+const phaseLabel = document.getElementById('phaseLabel');
 const startButton = document.getElementById('startButton');
 const pauseButton = document.getElementById('pauseButton');
 const resumeButton = document.getElementById('resumeButton');
@@ -16,6 +18,7 @@ const state = {
 
 function initApp() {
   updateDisplay(remainingSeconds);
+  updatePhaseLabel();
   bindUIEvents();
 }
 
@@ -64,10 +67,9 @@ function startTimer() {
     updateDisplay(remainingSeconds);
 
     if (remainingSeconds === 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      state.isRunning = false;
-      console.log('work complete');
+      switchPhase();
+      updateDisplay(remainingSeconds);
+      updatePhaseLabel();
     }
   }, 1000);
 }
@@ -97,15 +99,30 @@ function resetTimer() {
     timerInterval = null;
   }
 
-  remainingSeconds = WORK_DURATION_SECONDS;
   state.phase = 'work';
+  remainingSeconds = WORK_DURATION_SECONDS;
   state.isRunning = false;
   state.isPaused = false;
   updateDisplay(remainingSeconds);
+  updatePhaseLabel();
 }
 
-function switchMode(mode) {
-  // placeholder
+function switchPhase() {
+  if (state.phase === 'work') {
+    state.phase = 'break';
+    remainingSeconds = BREAK_DURATION_SECONDS;
+  } else {
+    state.phase = 'work';
+    remainingSeconds = WORK_DURATION_SECONDS;
+  }
+}
+
+function updatePhaseLabel() {
+  if (!phaseLabel) {
+    return;
+  }
+  const label = state.phase === 'work' ? 'Work' : 'Break';
+  phaseLabel.textContent = label;
 }
 
 function updateTimer() {
