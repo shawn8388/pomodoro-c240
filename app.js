@@ -10,6 +10,7 @@ const pauseButton = document.getElementById('pauseButton');
 const resumeButton = document.getElementById('resumeButton');
 const resetButton = document.getElementById('resetButton');
 const sessionCount = document.getElementById('sessionCount');
+const resetSessionsButton = document.getElementById('resetSessionsButton');
 
 let timerInterval = null;
 let remainingSeconds = WORK_DURATION_SECONDS;
@@ -70,6 +71,7 @@ function initApp() {
   }
   updateDisplay(remainingSeconds);
   updatePhaseLabel();
+  loadSessionCount();
   bindUIEvents();
 }
 
@@ -90,6 +92,13 @@ function bindUIEvents() {
   resetButton.addEventListener('click', () => {
     resetTimer();
   });
+
+  if (resetSessionsButton) {
+    resetSessionsButton.addEventListener('click', () => {
+      localStorage.setItem('pomodoroSessions', '0');
+      sessionCount.textContent = '0';
+    });
+  }
 }
 
 function startTimer() {
@@ -120,8 +129,14 @@ function startTimer() {
     updateProgressRing(remainingSeconds, totalDuration);
 
     if (remainingSeconds === 0) {
+      const oldPhase = state.phase;
       switchPhase();
       totalDuration = state.phase === 'work' ? WORK_DURATION_SECONDS : BREAK_DURATION_SECONDS;
+
+      if (oldPhase === 'work' && state.phase === 'break') {
+        incrementSessionCount();
+      }
+
       updateDisplay(remainingSeconds);
       updatePhaseLabel();
       updateProgressRing(remainingSeconds, totalDuration);
@@ -184,10 +199,6 @@ function updatePhaseLabel() {
   phaseLabel.textContent = label;
 }
 
-function updateTimer() {
-  // placeholder
-}
-
 function updateDisplay(seconds) {
   if (!timerValue) {
     return;
@@ -200,25 +211,9 @@ function updateProgressRing(remainingSeconds, totalSeconds) {
   if (!foregroundCircle) {
     return;
   }
-  
+
   const offset = RING_CIRCUMFERENCE * (remainingSeconds / totalSeconds);
   foregroundCircle.setAttribute('stroke-dashoffset', offset);
-}
-
-function playTransitionSound() {
-  // placeholder
-}
-
-function loadSessionCount() {
-  // placeholder
-}
-
-function saveSessionCount(count) {
-  // placeholder
-}
-
-function incrementSessionCount() {
-  // placeholder
 }
 
 function formatTime(seconds) {
@@ -229,12 +224,33 @@ function formatTime(seconds) {
   return `${minuteString}:${secondString}`;
 }
 
-function setControlStates(isRunning, isPaused) {
-  // placeholder
+// ========== Session Counter (localStorage) ==========
+function loadSessionCount() {
+  const saved = localStorage.getItem('pomodoroSessions');
+  let count = 0;
+  if (saved !== null && !isNaN(parseInt(saved, 10))) {
+    count = parseInt(saved, 10);
+  }
+  sessionCount.textContent = count;
+  return count;
 }
 
-function setModeVisuals(mode) {
-  // placeholder
+function saveSessionCount(count) {
+  localStorage.setItem('pomodoroSessions', count);
+  sessionCount.textContent = count;
 }
+
+function incrementSessionCount() {
+  let current = parseInt(sessionCount.textContent, 10) || 0;
+  current += 1;
+  saveSessionCount(current);
+}
+// ====================================================
+
+// These placeholders remain for compatibility with PLAN.md (not used further)
+function updateTimer() {}
+function playTransitionSoundPlaceholder() {}
+function setControlStates(isRunning, isPaused) {}
+function setModeVisuals(mode) {}
 
 window.addEventListener('DOMContentLoaded', initApp);
