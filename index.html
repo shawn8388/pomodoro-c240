@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomodoro Timer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="timer-card" aria-label="Pomodoro timer">
+      <div class="progress-ring" aria-hidden="true">
+        <div class="progress-ring__circle"></div>
+      </div>
+
+      <div class="timer-display">
+        <p class="timer-label">Work Session</p>
+        <p class="timer-value" id="timerValue">25:00</p>
+      </div>
+
+      <div class="controls">
+        <button id="startButton" type="button">Start</button>
+        <button id="pauseButton" type="button">Pause</button>
+        <button id="resetButton" type="button">Reset</button>
+      </div>
+
+      <div class="session-info">
+        <p>Sessions completed: <span id="sessionCount">0</span></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
