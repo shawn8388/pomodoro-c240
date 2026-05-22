@@ -26,10 +26,10 @@ function bindUIEvents() {
 
   pauseButton.addEventListener('click', () => {
     pauseTimer();
-  
-     resumeButton.addEventListener('click', () => {
-       resumeTimer();
-     });
+  });
+
+  resumeButton.addEventListener('click', () => {
+    resumeTimer();
   });
 
   resetButton.addEventListener('click', () => {
