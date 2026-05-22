@@ -1,7 +1,10 @@
 const WORK_DURATION_SECONDS = 25 * 60;
 const BREAK_DURATION_SECONDS = 5 * 60;
+const RING_RADIUS = 90;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const timerValue = document.getElementById('timerValue');
 const phaseLabel = document.getElementById('phaseLabel');
+const foregroundCircle = document.getElementById('foregroundCircle');
 const startButton = document.getElementById('startButton');
 const pauseButton = document.getElementById('pauseButton');
 const resumeButton = document.getElementById('resumeButton');
@@ -10,6 +13,7 @@ const sessionCount = document.getElementById('sessionCount');
 
 let timerInterval = null;
 let remainingSeconds = WORK_DURATION_SECONDS;
+let totalDuration = WORK_DURATION_SECONDS;
 const state = {
   phase: 'work',
   isRunning: false,
@@ -17,6 +21,11 @@ const state = {
 };
 
 function initApp() {
+  totalDuration = WORK_DURATION_SECONDS;
+  if (foregroundCircle) {
+    foregroundCircle.setAttribute('stroke-dasharray', RING_CIRCUMFERENCE);
+    updateProgressRing(remainingSeconds, totalDuration);
+  }
   updateDisplay(remainingSeconds);
   updatePhaseLabel();
   bindUIEvents();
@@ -65,11 +74,14 @@ function startTimer() {
     }
 
     updateDisplay(remainingSeconds);
+    updateProgressRing(remainingSeconds, totalDuration);
 
     if (remainingSeconds === 0) {
       switchPhase();
+      totalDuration = state.phase === 'work' ? WORK_DURATION_SECONDS : BREAK_DURATION_SECONDS;
       updateDisplay(remainingSeconds);
       updatePhaseLabel();
+      updateProgressRing(remainingSeconds, totalDuration);
     }
   }, 1000);
 }
@@ -101,10 +113,12 @@ function resetTimer() {
 
   state.phase = 'work';
   remainingSeconds = WORK_DURATION_SECONDS;
+  totalDuration = WORK_DURATION_SECONDS;
   state.isRunning = false;
   state.isPaused = false;
   updateDisplay(remainingSeconds);
   updatePhaseLabel();
+  updateProgressRing(remainingSeconds, totalDuration);
 }
 
 function switchPhase() {
@@ -138,7 +152,12 @@ function updateDisplay(seconds) {
 }
 
 function updateProgressRing(remainingSeconds, totalSeconds) {
-  // placeholder
+  if (!foregroundCircle) {
+    return;
+  }
+  
+  const offset = RING_CIRCUMFERENCE * (remainingSeconds / totalSeconds);
+  foregroundCircle.setAttribute('stroke-dashoffset', offset);
 }
 
 function playTransitionSound() {

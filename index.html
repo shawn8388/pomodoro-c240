@@ -9,9 +9,10 @@
 <body>
   <main class="app-shell">
     <section class="timer-card" aria-label="Pomodoro timer">
-      <div class="progress-ring" aria-hidden="true">
-        <div class="progress-ring__circle"></div>
-      </div>
+      <svg class="progress-ring" viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="progress-ring__background" cx="100" cy="100" r="90" />
+        <circle class="progress-ring__foreground" cx="100" cy="100" r="90" id="foregroundCircle" />
+      </svg>
 
       <div class="timer-display">
         <p class="timer-label" id="phaseLabel">Work</p>

@@ -36,18 +36,23 @@ body {
   width: 220px;
   height: 220px;
   margin: 0 auto 24px;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, #e8effc 45%, transparent 46%),
-    conic-gradient(#7c3aed 0deg, #c7d2fe 360deg);
-  display: grid;
-  place-items: center;
+  display: block;
 }
 
-.progress-ring__circle {
-  width: 176px;
-  height: 176px;
-  border-radius: 50%;
-  background: #fff;
+.progress-ring__background {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 8;
+}
+
+.progress-ring__foreground {
+  fill: none;
+  stroke: #7c3aed;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform-origin: 100px 100px;
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset 0.1s linear;
 }
 
 .timer-display {
